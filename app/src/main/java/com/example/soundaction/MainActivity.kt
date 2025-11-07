@@ -29,6 +29,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.soundaction.ui.theme.AppTheme
 import com.example.soundaction.ui.theme.SoundActionTheme
 object FontLoader {
@@ -38,17 +41,31 @@ object FontLoader {
         )
     }
 }
-class MainActivity : ComponentActivity() {
+class MainActivity() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
+
+
             SoundActionTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
-                    Column(
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
+
+                val navContoller = rememberNavController()
+                NavHost(navController = navContoller, startDestination = "Screen.Home") {
+                    composable("Screen.Home") {
+                        Scaffold(modifier = Modifier.fillMaxSize()
+                        ) { innerPadding ->
+                            Column(
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                MyVerticalLayout( onNavigateToDetails = {
+                                    navContoller.navigate("Screen.Game")
+                                })
+                            }
+                        }
+                    }
+                    composable("Screen.Game") {
                         GameScreen()
                     }
                 }
@@ -58,7 +75,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyVerticalLayout() {
+fun MyVerticalLayout(onNavigateToDetails: () -> Unit) {
     val gradientStart = AppTheme.colors.gradientStart
     val gradientEnd = AppTheme.colors.gradientEnd
 
@@ -99,7 +116,7 @@ fun MyVerticalLayout() {
             )
             Button(
 
-                onClick = {},
+                onClick = onNavigateToDetails,
                 modifier = Modifier.size(width = 150.dp, height = 70.dp)
             ) {
                 Text(
@@ -116,6 +133,10 @@ fun MyVerticalLayout() {
 @Composable
 fun StartScreenPreview() {
     SoundActionTheme {
-        MyVerticalLayout()
+        MyVerticalLayout(
+            onNavigateToDetails = {
+
+            }
+        )
     }
 }
