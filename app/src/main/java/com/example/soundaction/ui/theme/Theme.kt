@@ -1,6 +1,5 @@
 package com.example.soundaction.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -9,8 +8,36 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.*
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.CoroutineStart
 
+@Immutable
+data class CustomColorScheme(
+    val gradientStart: Color,
+    val gradientEnd: Color,
+    val accentGradientStart: Color,
+    val accentGradientEnd: Color,
+)
+
+private val LocalCustomColorScheme = staticCompositionLocalOf {
+    CustomColorScheme(
+        gradientStart = GradientStart,
+        gradientEnd = GradientEnd,
+        accentGradientStart = AccentGradientStart,
+        accentGradientEnd = AccentGradientEnd
+    )
+}
+
+private val CommonCustomColorScheme = CustomColorScheme(
+    gradientStart = GradientStart,
+    gradientEnd = GradientEnd,
+    accentGradientStart = AccentGradientStart,
+    accentGradientEnd = AccentGradientEnd
+)
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
@@ -32,7 +59,12 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
-
+object AppTheme {
+    val colors: CustomColorScheme
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalCustomColorScheme.current
+}
 @Composable
 fun SoundActionTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -49,10 +81,13 @@ fun SoundActionTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(
+        LocalCustomColorScheme provides CommonCustomColorScheme
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
