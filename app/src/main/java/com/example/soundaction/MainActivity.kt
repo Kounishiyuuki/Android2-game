@@ -41,31 +41,31 @@ object FontLoader {
         )
     }
 }
-class MainActivity() : ComponentActivity() {
+sealed class Screen(val route: String) {
+    data object Home : Screen("home")
+    data object Game : Screen("game")
+}
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-
-
-
             SoundActionTheme {
-
-                val navContoller = rememberNavController()
-                NavHost(navController = navContoller, startDestination = "Screen.Home") {
-                    composable("Screen.Home") {
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = Screen.Home.route) {
+                    composable(Screen.Home.route) {
                         Scaffold(modifier = Modifier.fillMaxSize()
                         ) { innerPadding ->
                             Column(
                                 modifier = Modifier.padding(innerPadding)
                             ) {
                                 MyVerticalLayout( onNavigateToDetails = {
-                                    navContoller.navigate("Screen.Game")
+                                    navController.navigate(Screen.Game.route)
                                 })
                             }
                         }
                     }
-                    composable("Screen.Game") {
+                    composable(Screen.Game.route) {
                         GameScreen()
                     }
                 }
@@ -133,10 +133,6 @@ fun MyVerticalLayout(onNavigateToDetails: () -> Unit) {
 @Composable
 fun StartScreenPreview() {
     SoundActionTheme {
-        MyVerticalLayout(
-            onNavigateToDetails = {
-
-            }
-        )
+        MyVerticalLayout(onNavigateToDetails = {})
     }
 }
