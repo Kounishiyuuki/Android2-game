@@ -44,6 +44,7 @@ object FontLoader {
 sealed class Screen(val route: String) {
     data object Home : Screen("home")
     data object Game : Screen("game")
+    data object Result : Screen("result")
 }
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +68,20 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(Screen.Game.route) {
                         GameScreen()
+                    }
+                    composable(Screen.Result.route){
+                        Scaffold(modifier = Modifier.fillMaxSize()
+                        ){ innerPadding ->
+                            Column (
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                ResultScreen( onNavigateToDetails = {
+                                    navController.navigate(Screen.Home.route) {
+                                        popUpTo(Screen.Home.route) { inclusive = true }
+                                    }
+                                })
+                            }
+                        }
                     }
                 }
             }
@@ -115,7 +130,6 @@ fun MyVerticalLayout(onNavigateToDetails: () -> Unit) {
                 fontSize = 150.sp,
             )
             Button(
-
                 onClick = onNavigateToDetails,
                 modifier = Modifier.size(width = 150.dp, height = 70.dp)
             ) {
