@@ -41,7 +41,9 @@ fun OneTileAnimation(
     widthPlace:Int,
     tileAnimationStart:Boolean,
 ) {
-    if (widthPlace == -1) {
+    private const val INVALID_LANE = -1
+
+    if (widthPlace == INVALID_LANE) {
         return
     }
 
@@ -50,8 +52,11 @@ fun OneTileAnimation(
             .clipToBounds()
     ) {
         val maxHeight = this.maxHeight
+
+        private const val LANE_COUNT = 4
+        
         val objectHeight = maxHeight / 4
-        val objectWidth = maxWidth / 4
+        val objectWidth = maxWidth / LANE_COUNT
 
         val aniSpec = if (tileAnimationStart) {
             tween<Dp> (
