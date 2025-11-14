@@ -77,7 +77,7 @@ fun GameScreen(viewModel: GameViewModel = androidx.lifecycle.viewmodel.compose.v
                     viewModel.tiles.forEachIndexed { index, tile ->
 //                        if (checkHit(tile.y, tile.lane, lanePressed)) {
 //                            viewModel.removeTile(index)
-//
+//                            // TODO: スコア加算など
 //                        }
                     }
                 }
