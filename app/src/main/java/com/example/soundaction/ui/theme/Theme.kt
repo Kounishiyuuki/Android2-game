@@ -1,4 +1,4 @@
-package com.example.soundaction.theme
+package com.example.soundaction.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
