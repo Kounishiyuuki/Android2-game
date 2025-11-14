@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -21,68 +22,38 @@ import com.example.soundaction.ui.theme.TileColor
 
 @Composable
 fun TileAnimationLayer(
-    widthPlaces:List<Int>,
-    animationDurationMills: Int = 2500
+    tiles: List<TileState>,
+    animationDurationMills: Int = 2500,
+    onUpdateY: (Int, Dp) -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        widthPlaces.forEach{ lane ->
-            OneTileAnimation(
-                tileAnimationStart = true,
-                widthPlace = lane,
-                animationDurationMills = animationDurationMills,
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val maxHeight = maxHeight
+        val objectHeight = maxHeight / 4 // レーンの数
+        val objectWidth = maxWidth / 4 // 拍子
+
+        tiles.forEachIndexed { index, tile ->
+            val animatedOffsetY by animateDpAsState(
+                targetValue = maxHeight,
+                animationSpec = tween(durationMillis = animationDurationMills, easing = LinearEasing),
+                label = "tile_fall"
+            )
+
+            LaunchedEffect(animatedOffsetY) {
+                onUpdateY(index, animatedOffsetY)
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(objectWidth, objectHeight)
+                    .offset(x = objectWidth * tile.lane, y = tile.y)
+                    .background(TileColor)
             )
         }
     }
 }
 
-@Composable
-fun OneTileAnimation(
-    animationDurationMills:Int,
-    widthPlace:Int,
-    tileAnimationStart:Boolean,
-) {
-    private const val INVALID_LANE = -1
-
-    if (widthPlace == INVALID_LANE) {
-        return
-    }
-
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxSize()
-            .clipToBounds()
-    ) {
-        val maxHeight = this.maxHeight
-
-        private const val LANE_COUNT = 4
-        
-        val objectHeight = maxHeight / 4
-        val objectWidth = maxWidth / LANE_COUNT
-
-        val aniSpec = if (tileAnimationStart) {
-            tween<Dp> (
-                durationMillis = animationDurationMills,
-                easing = LinearEasing,
-            )
-        } else {
-            snap()
-        }
-
-        val animatedOffsetY by animateDpAsState (
-            targetValue = if (tileAnimationStart) {
-                maxHeight
-            } else {
-                -objectHeight
-            },
-            animationSpec = aniSpec,
-            label = "tile_animation",
-        )
-
-        Box(
-            modifier = Modifier
-                .size(maxWidth / 4, objectHeight)
-                .offset(y = animatedOffsetY, x =  objectWidth * widthPlace)
-                .background(TileColor)
-        ) {}
-    }
-
-}
+data class TileState(
+    val lane: Int,
+    val y: Dp,
+    val isActive: Boolean
+)

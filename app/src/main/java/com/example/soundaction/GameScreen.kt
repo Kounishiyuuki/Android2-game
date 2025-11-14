@@ -1,5 +1,6 @@
 package com.example.soundaction
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,13 +22,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.soundaction.ui.theme.AppTheme
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import com.example.soundaction.theme.AppTheme
+import androidx.compose.material3.Text
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun GameScreen() {
+fun GameScreen(viewModel: GameViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val gradientStart = AppTheme.colors.accentGradientStart
     val gradientEnd = AppTheme.colors.accentGradientEnd
 
@@ -44,7 +47,7 @@ fun GameScreen() {
             )
     ) {
     //レーンの描画
-        Line()
+    Line()
 
     IconButton(
         onClick = {},
@@ -70,7 +73,14 @@ fun GameScreen() {
                     .weight(1f)
                     .background(Color.Black.copy(alpha = 0.2f))
             ) {
-                ActionButtons()
+                ActionButtons { lanePressed ->
+                    viewModel.tiles.forEachIndexed { index, tile ->
+//                        if (checkHit(tile.y, tile.lane, lanePressed)) {
+//                            viewModel.removeTile(index)
+//                            // TODO: スコア加算など
+//                        }
+                    }
+                }
             }
         }
     }
@@ -136,24 +146,22 @@ fun Line() {
         )
     }
 }
+
 @Composable
-fun ActionButtons() {
-    Row(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        repeat(4) { // ループで4つのボタンを生成
+fun ActionButtons(onPress: (Int) -> Unit) {
+    Row(modifier = Modifier.fillMaxSize()) {
+        repeat(4) { lane ->
             Button(
-                onClick = { /* TODO: このレーンのクリック処理を実装 */ },
+                onClick = { onPress(lane) },
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
                 shape = RoundedCornerShape(0.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent // 透明であることが分かりやすいように Color.Transparent を使用
+                    containerColor = Color.Transparent
                 ),
             ) {}
         }
     }
-
 }
 
