@@ -1,6 +1,5 @@
 package com.example.soundaction
 
-import android.R.attr.maxHeight
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,10 +42,6 @@ import kotlin.math.abs
 fun GameScreen(viewModel: GameViewModel = viewModel()) {
     var started by remember { mutableStateOf(false) }
 
-    val maxHeight = maxHeight
-    val hitLineY = (maxHeight * 4 / 5).dp
-    val hitWindow = (maxHeight / 10).dp
-
     val gradientStart = AppTheme.colors.accentGradientStart
     val gradientEnd = AppTheme.colors.accentGradientEnd
 
@@ -67,6 +62,9 @@ fun GameScreen(viewModel: GameViewModel = viewModel()) {
                 }
             }
     ) {
+        val maxHeight = this.maxHeight
+        val hitLineY = maxHeight * 4 / 5
+        val hitWindow = maxHeight / 10
         //レーンの描画
         Line()
 
