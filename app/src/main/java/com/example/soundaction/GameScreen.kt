@@ -127,7 +127,7 @@ fun Line() {
     Row (
         modifier = Modifier.fillMaxSize()
     ){
-        repeat(4) {
+        repeat(4) { index ->
             //レーン
             Box(
                 Modifier
@@ -136,12 +136,14 @@ fun Line() {
             )
 
             //境界線
-            Spacer(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(dividerWidth)
-                    .background(dividerColor)
-            )
+            if (index < 3) {
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(dividerWidth)
+                        .background(dividerColor)
+                )
+            }
         }
     }
 }
@@ -164,7 +166,6 @@ fun ActionButtons(hitLineY: Dp, onPress: (Int) -> Unit) {
 
 
 fun checkHit(tileY: Dp, tileLane: Int, pressedLane: Int, hitLineY: Dp, hitWindow: Dp): Boolean {
-    val hitWindow = hitWindow
     val isLaneMatch = tileLane == pressedLane
     val isYInRange = abs((tileY - hitLineY).value) <= hitWindow.value
     return isLaneMatch && isYInRange
