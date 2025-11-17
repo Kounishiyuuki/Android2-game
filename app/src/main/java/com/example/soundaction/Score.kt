@@ -1,11 +1,11 @@
 package com.example.soundaction
 
-data class Note(val timeMillis: Long, val lane: Int)
+data class Note(val order: Int, val lane: Int)
 
 fun loadScore(): List<Note> = listOf(
-    Note(500, 0),
-    Note(1000, 2),
-    Note(1500, 1),
-    Note(2000, 3),
-    // 必要に応じて追加
+    Note(1, 0),
+    Note(2, 1),
+    Note(3, 2),
+    Note(4, 3),
 )
+
