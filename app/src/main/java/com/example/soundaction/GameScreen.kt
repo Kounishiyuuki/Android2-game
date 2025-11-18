@@ -63,12 +63,9 @@ fun GameScreen(viewModel: GameViewModel = viewModel()) {
                 }
             }
     ) {
-
         val maxHeight = this.maxHeight
         val hitLineY = maxHeight * 4 / 5
-        val hitWindow = maxHeight / 20
-        Log.d("hitWindow", "hitWindow=$hitWindow")
-
+        val hitWindow = maxHeight / 10
         //レーンの描画
         Line()
 
@@ -130,7 +127,6 @@ fun GameScreen(viewModel: GameViewModel = viewModel()) {
                                 Log.d("checkHit", "checkHit=0")
                             }
                         }
-
                     }
                 }
             }
@@ -199,7 +195,6 @@ fun checkHit(tileY: Dp, tileLane: Int, pressedLane: Int, hitLineY: Dp, hitWindow
         return -1
     }
 }
-
 
 
 
