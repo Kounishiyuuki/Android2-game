@@ -1,5 +1,7 @@
 package com.example.soundaction
 
+import android.content.Context
+import android.media.MediaPlayer
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,11 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.soundaction.ui.theme.AppTheme
 import kotlin.math.abs
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.delay
 
 @Composable
 fun GameScreen(
     viewModel: GameViewModel = viewModel(),
-    onGameFinished: (Int, Int, Int, Int, Int) -> Unit
+    onGameFinished: (Int, Int, Int, Int, Int) -> Unit // takuma-posescreenの変更
 ) {
     var started by remember { mutableStateOf(false) }
 
@@ -54,7 +58,6 @@ fun GameScreen(
     val good by viewModel.good
     val lost by viewModel.lost
 
-    // ゲーム終了フラグが true になったら通知する
     LaunchedEffect(isFinished) {
         if (isFinished) {
             onGameFinished(maxCombo, perfect, great, good, lost)
@@ -63,6 +66,8 @@ fun GameScreen(
 
     val gradientStart = AppTheme.colors.accentGradientStart
     val gradientEnd = AppTheme.colors.accentGradientEnd
+
+    val context = LocalContext.current 
 
     BoxWithConstraints(
         modifier = Modifier
@@ -94,9 +99,28 @@ fun GameScreen(
 
         TileAnimationLayer(tiles = viewModel.tiles)
 
+        val bgmPlayer = remember {
+            MediaPlayer.create(context, R.raw.thefatrat_unity).apply {
+                setVolume(0.5f, 0.5f)
+                isLooping = false
+
+                setOnCompletionListener {
+                    release()
+                }
+            }
+        }
+
         LaunchedEffect(started) {
             if (started) {
+
+                val score = loadScore(context)
+                viewModel.setScore(score)
+
                 viewModel.startGame(maxHeight)
+               
+                delay(2250)
+
+                bgmPlayer.start()
             }
         }
 
@@ -125,7 +149,8 @@ fun GameScreen(
                     .weight(1f)
                     .background(Color.Black.copy(alpha = 0.2f))
             ) {
-                ActionButtons(hitLineY = hitLineY) { lanePressed ->
+                // context引数を追加
+                ActionButtons(hitLineY = hitLineY, context) { lanePressed ->
                     viewModel.tiles.forEachIndexed { index, tile ->
                         // 叩かれたやつ(isHit) や 非表示(isActive=false) は判定しない
                         if (!tile.isActive || tile.isHit) return@forEachIndexed
@@ -176,7 +201,8 @@ fun Line() {
 }
 
 @Composable
-fun ActionButtons(hitLineY: Dp, onPress: (Int) -> Unit) {
+fun ActionButtons(hitLineY: Dp, context: Context, onPress: (Int) -> Unit) {
+
     Row(modifier = Modifier.fillMaxSize()) {
         repeat(4) { lane ->
             Button(
@@ -206,6 +232,3 @@ fun checkHit(tileY: Dp, tileLane: Int, pressedLane: Int, hitLineY: Dp, hitWindow
         return 0 // Miss or No Hit
     }
 }
-
-
-

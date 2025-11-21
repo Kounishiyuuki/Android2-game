@@ -32,26 +32,34 @@ class GameViewModel : ViewModel() {
 
     private val _lost = mutableStateOf(0)
     val lost: State<Int> = _lost
-    val stepTimes = 2500
+
+    // mainブランチの値を採用
+    val stepTimes = 2857
     val noteTime = stepTimes / 5
-    private val scoreData = loadScore()
+    private var scoreData:List<Note> = emptyList()
     private var startTime = 0L
 
+    fun setScore(score: List<Note>) {
+        scoreData = score
+    }
     fun startGame(maxHeight: Dp) {
         startTime = System.currentTimeMillis()
         _tiles.clear()
+        
         _isGameFinished.value = false
         _maxCombo.value = 0
         _combo.value = 0
         _perfect.value = 0
         _lost.value = 0
+        _great.value = 0
+        _good.value = 0
 
         val lastNoteOrder = scoreData.maxOfOrNull { it.order } ?: 0
         val endTime = (lastNoteOrder * noteTime) + stepTimes + 1000
 
-        // Note から TileState を初期化（非アクティブ）
+        
         scoreData.forEach { note ->
-            val id = note.order.toLong() // order を id に使う
+            val id = note.order.toLong() 
             _tiles.add(TileState(id, note.lane, 0.dp, false))
         }
 
@@ -97,8 +105,10 @@ class GameViewModel : ViewModel() {
             when (hitType) {
                 3 -> _perfect.value += 1  // Perfect
                 2 -> _great.value += 1    // Great
-                1 -> _good.value += 1     // Good
+                1 -> _good.value += 1    // Good
             }
+        } else {
+             _combo.value = 0
         }
     }
 

@@ -1,14 +1,23 @@
 package com.example.soundaction
 
+import android.content.Context
+
 data class Note(val order: Int, val lane: Int)
 
-fun loadScore(): List<Note> = listOf(
-    Note(1, 0),
-    Note(2, 1),
-    Note(3, 2),
-    Note(4, 3),
-    Note(5, 0),
-    Note(6, 1),
-    Note(7, 2),
-    Note(9, 3),
-)
+fun loadScore(context: Context): List<Note> {
+    val notes = mutableListOf<Note>()
+    val inputStream = context.assets.open("score.txt")
+    inputStream.bufferedReader().useLines { lines ->
+        lines.forEach { line ->
+            val parts = line.split(",")
+            if (parts.size == 2) {
+                val order = parts[0].trim().toIntOrNull()
+                val lane = parts[1].trim().toIntOrNull()
+                if (order != null && lane != null) {
+                    notes.add(Note(order, lane))
+                }
+            }
+        }
+    }
+    return notes
+}
